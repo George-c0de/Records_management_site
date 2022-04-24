@@ -1,0 +1,51 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block content %}
+    <body>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <div class="container">
+        <form action="{% url 'search_timetable' %}" method="get">
+            <input type="hidden" name="FIO" value="{{ user.username }}">
+            <label>Выберите дату и кликните на пользователя для перехода на расписание</label>
+            <input type="date" name="date">
+            <br><br>
+            <button type="submit" ><p>{{ user.username }} {{ user.first_name }} {{ user.last_name }}</p></button></form>
+        <br>
+            <div class="row">
+                <div class="col">
+                    <p>Направление: </p>
+                </div>
+                <div class="col">
+                    {% for el in type_question %}
+                        <p>
+                            {{ el.name }}
+                        </p>
+                    {% endfor %}
+                </div>
+            <div class="col">
+            {% if type_all %}
+                <form action="{% url 'add_category' %}" method="POST">
+                 {% csrf_token %}
+                    <select name="id">
+                        {% for el in type_all %}
+                        <option value="{{ el.id }}">{{ el.name }}</option>
+                        {% endfor %}
+                    </select>
+                <input type="hidden" value="{{ user.id }}" name="user">
+                <br><br>
+                    <button type="submit">Добавить категорию</button>
+                </form>
+                {% else %}
+                <p>Все категории добавлены</p>
+            {% endif %}
+            </div>
+            </div>
+        </div>
+    </main>
+    </body>
+
+{% endblock%}

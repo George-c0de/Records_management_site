@@ -1,0 +1,184 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block content %}
+
+ <body>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <div class="container">
+        <form action="{% url 'analysis' %}" method="POST">
+            {% csrf_token %}
+            <input name="date" type="date">
+            <button type="submit">Поиск по дате</button>
+        </form>
+        {% if all_len %}
+            <div class="row">
+                <div class="col">
+
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+ <input type="button" name="btn" value="Скачать" onClick="dow()">
+                </div>
+                <div class="col">
+                    <div class="row">
+                        {% if  all_len %}
+                        Всего <input id="all" type="hidden" value="{{ all_len }}"> {{ all_len }} записей</div>
+                            <input id="names" type="hidden" value="{{ names }}">
+                            <input id="all_col" type="hidden" value="{{ all }}">
+                             <input id="col_type" type="hidden" value="{{ col_type }}">
+                            <input type="button" name="btn" value="Вычислить" onClick="Quantity()">
+                {% else %}
+                            <p>Нет</p>
+                {% endif %}
+                <input id="dict" type="hidden" value="{{ c }}">
+                    {% for key, value in c.items %}
+                    <div class="row">
+                        {{ key }} Кол-во: {{ value }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        <div class="row">
+            <div class="col">
+                <div id="chartContainer2" style="height: 370px; width: 100%;"></div>
+                <input id="is_not" type="hidden" value="{{ question_is_not }}">
+                <input id="is_yea" type="hidden" value="{{ question_is_yea }}">
+<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+                <input type="button" name="btn" value="Вычислить" onClick="circle()">
+            </div>
+            <div class="col">
+                <p>По сотрудникам</p>
+                <div class="col">
+                    {% for key, value in ques.items %}
+                         <div class="container">
+                         <div class="border">
+                        <div class="row  bg-light">
+                        <div class="col">
+                            {{ key }}
+                        </div>
+                        <div class="col">
+                            {% for key, value in value.items %}
+                            <div class="row">
+                                <p>{{ key }}: {{ value }}</p>
+                            </div>
+                                {% endfor %}
+                        </div></div>
+                        </div></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <script>
+            function circle() {
+            var b = Number(document.getElementById('is_not').value);
+            var a = Number(document.getElementById('is_yea').value);
+                console.log(a)
+                console.log(b)
+var options = {
+	exportEnabled: true,
+	animationEnabled: true,
+	title:{
+		text: "Accounting"
+	},
+	legend:{
+		horizontalAlign: "right",
+		verticalAlign: "center"
+	},
+	data: [{
+		type: "pie",
+		showInLegend: true,
+		toolTipContent: "<b>{name}</b>: Кол-во: {y} (#percent%)",
+		indexLabel: "{name}",
+		legendText: "{name} (#percent%)",
+		indexLabelPlacement: "inside",
+		dataPoints: [
+			{ y: a, name: "Вопрос решен" },
+			{ y: b, name: "На дальнейшем рассмотрении" },
+		]
+	}]
+};
+
+$("#chartContainer2").CanvasJSChart(options);
+
+}
+            function  dow(){
+                var canvas = document.getElementsByClassName("canvasjs-chart-canvas");
+var anchor = document.createElement("a");
+anchor.href = canvas[0].toDataURL("image/png");
+anchor.download = "IMAGE.PNG";
+anchor.click();
+            }
+            function Quantity(){
+                var col = Number(document.getElementById('col_type').value);
+                var names = document.getElementById('names').value;
+                var coles = document.getElementById('all_col').value;
+                var names2 = Array.from(names);
+                var coles2 = Array.from(coles);
+                var all_el = {};
+                var str = "";
+                var otch=0;
+                var coles_new = [];
+                for (let i=0;i<coles2.length;i++){
+                    if(coles2[i] !== "[" & coles2[i] !== "," & coles2[i] !== " " & coles2[i] !== "]"){
+                        coles_new.push(coles2[i]);
+                    }
+                }
+                var names_new = [];
+                for(let i = 0; i<names2.length;i++){
+                    if(names2[i]==="'"){
+                        console.log(names2[i]);
+                        i++;
+
+                        var flag = 0;
+                        while(flag !== 1){
+                            if(names2[i]!=="'"){
+                                str = str + names2[i];
+                                i++;
+                            }
+                            else{
+                                flag=1;
+                                all_el[str] = coles_new[otch];
+                                otch++;
+                                str = "";
+                            }
+                        }
+                    }
+                }
+                var a = 10;
+                a = Number(document.getElementById('all').value);
+var options = {
+	animationEnabled: true,
+	title: {
+		text: "Краткая статистика"
+	},
+	axisX: {
+		title: "Вопросы"
+	},
+	data: [{
+		type: "column",
+		yValueFormatString: "#,##0.0#"%"",
+        dataPoints: [
+		]
+	}]
+};
+var data = [];
+for(var [key, value] of Object.entries(all_el)){
+    data.push({label:String(key), y:Number(value)});
+}
+options.data.push({dataPoints: data});
+
+$("#chartContainer").CanvasJSChart(options);
+            }
+        </script>
+            {% else %}
+            <h2>Поиск не дал результатов</h2>
+{% endif %}
+        </div>
+    </main>
+ </body>
+{% endblock %}

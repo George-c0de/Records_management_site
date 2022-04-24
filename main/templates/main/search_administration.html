@@ -1,0 +1,34 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block content %}
+    <body>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <div class="container">
+        <form action="{% url 'search_all' %}" method="get">
+<div class="input-group">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="">ФИО</span>
+  </div>
+  <input name = "FIO" style="width: 350px; height: 38px" type="text" class="form-control">
+        <button type="submit" class="btn btn-primary">Поиск
+    <i class="fas fa-search"></i>
+  </button></div>
+</form><br>
+    <p>Результат поиска: </p>
+            <div class="row">
+                {% for el in object_list %}
+                    <a href="create_adm/{{ el.id }}"><div class="col">
+        <button class="btn btn-primary btn-lg"><p>
+           {{ el.username }} {{ el.first_name }} {{ el.last_name }}
+        </p>
+        </button>
+        </div></a>
+                {% endfor %}
+            </div>
+        </div></main></body>
+
+{% endblock%}

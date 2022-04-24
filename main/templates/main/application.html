@@ -1,0 +1,100 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Заявка №{{ title}}
+{% endblock %}
+
+{% block content %}
+ <body>
+
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <div class="container">
+            <div class="row align-items-start">
+                <div class="col">
+     <a href="{% url 'application_new' %}"><button style="width: 350px; height: 50px" type="button" class="btn btn-light btn-lg">Новые заявки</button></a>
+    </div>
+                <div class="col">
+      <a href="{% url 'application_true' %}"><button style="width: 350px; height: 50px" type="button" class="btn btn-light btn-lg">Подтвержденные заявки</button></a>
+    </div>
+                <div class="col">
+
+      <a href="{% url 'application_false' %}"><button style="width: 350px; height: 50px" type="button" class="btn btn-light btn-lg">Отклоненные заявки</button></a>
+    </div>
+            </div>
+        </div>
+    <br>
+      <h2>Заявка №{{ title }}</h2>
+        <div class="container">
+            <div class="row align-items-start">
+                <div class="col-md-5"><u>Дата и время подачи заявки</u> : {{ application.date_application }}</div>
+            </div><br>
+            <div class="row align-items-start">
+                <div class="col-md-5"><u>Тип вопроса</u> : {{ application.type_question }}</div>
+            </div><br>
+             <div class="row align-items-start">
+                <div class="col-md-5"><u>Дата и время приема</u> : {{ application.date_receipt }}</div>
+            </div><br>
+            <div class="row align-items-start">
+                <div class="col-md-5"><u>Назначенный сотрудник</u> : {{ application.id_employee }}</div>
+
+            </div><br>
+            <div class="row align-items-start">
+                <div class="col-md-5"><u>Цель визита</u> : {{ application.purpose_visit }}</div>
+            </div><br><br>
+
+        </div>
+
+        <div class="row">
+            <div class="col">
+            <h2 class="float-left">
+            Контактная информация
+        </h2>
+                <div class=col style="margin-left: 140px;">
+            <div class="row align-items-start">
+                <div class="col-md-5"><u>ФИО гражданина</u> : {{ application.FIO }}</div>
+            </div><br>
+            <div class="row align-items-start">
+                <div class="col-md-5"><u>Телефон</u> : {{ application.telephone }}</div>
+            </div><br>
+            <div class="row align-items-start">
+                <div class="col-md-5"><u>Электронная почта</u> : {{ application.email }}</div>
+            </div><br></div>
+        </div>
+                <div class="col">
+<h2 class="float-left">
+            Решение по заявке:
+        </h2>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" name="text" value="{{application.text}}"/><br>
+                        <label>Выберите пользователя из списка</label>
+                        <select name="id_employee" title="Введите id пользователя" class="form-control" >
+                        {% if user %}
+                            {% for el in user %}
+                                  <option value={{ el.id }}>{{ el.username }} id -  {{ el.id }}</option>
+                            {% endfor %}
+                            {% else %}
+                            <option>Нет пользователей</option>
+                        {% endif %}
+                    </select>
+                    <br>
+                     <div class="row">
+                         <div class="col">
+                             <input class="btn btn-success" type="submit" name="status" value="Confirmed Applications"/></div>
+                         <div class="col" style="margin-left: 250px;">
+                             <input class="btn btn-danger" type="submit" name="status" value="Rejected Applications" /></div>
+                     </div>
+
+                    </form>
+                </div>
+            </div>
+    </main>
+
+    <script src="/docs/5.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+<div class="goog-te-spinner-pos"><div class="goog-te-spinner-animation"><svg xmlns="http://www.w3.org/2000/svg" class="goog-te-spinner" width="96px" height="96px" viewBox="0 0 66 66"><circle class="goog-te-spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg></div></div>
+ </body>
+
+
+{% endblock %}
