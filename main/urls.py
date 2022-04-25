@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('', views.application_new, name='home'),
+    path('', views.index, name='home'),
     path('application_new', views.application_new, name='application_new'),
     path('application_true', views.application_true, name='application_true'),
     path('application_false', views.application_false, name='application_false'),
@@ -25,4 +25,6 @@ urlpatterns = [
     path('analysis', views.analysis, name='analysis'),
     path('application_employee', views.application_employee, name='application_employee'),
     path('application_list', views.application_list, name='application_list'),
+    path('application_secretary', views.application_secretary, name='application_secretary'),
+    path('application_secretary_search', views.application_secretary_search, name='application_secretary_search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

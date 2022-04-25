@@ -1,18 +1,19 @@
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CreateUserForm, ApplicationForm
+from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Application, Timetable, Type_question, Type_employee
-from django.views.generic import TemplateView, ListView
+from django.views.generic import ListView
 from django.contrib.auth import models
 
 
 @login_required(login_url='login')
 def index(request):
+    user = request.user.username
     if request.user.is_superuser:
         template = 'main/index.html'
         extends = 'main/base.html'
@@ -20,14 +21,59 @@ def index(request):
         return redirect('logout')
     elif request.user.groups.filter(name='Employee').exists():
         template = 'main/index.html'
-        extends = 'main/base2.html'
+        extends = 'main/base.html'
         return render(request, template, {'title': 'Главная страница', 'extends': extends})
-    elif request.user.groups.filter(name='Jury').exists():
-        return redirect('jury')
+    elif request.user.groups.filter(name='Secretary').exists():
+        template = 'main/index.html'
+        extends = 'main/base_secretary.html'
+        flag = "secretary"
     else:
         template = 'main/login.html'
     tasks = Application.objects.all()
-    return render(request, template, {'title': 'Главная страница', 'tasks': tasks, 'extends': extends})
+    return render(request, template,
+                  {'title': 'Главная страница', 'tasks': tasks, 'extends': extends, 'flag': flag, 'name': user})
+
+
+@login_required(login_url='login')
+def application_secretary_search(request):
+    query1 = request.GET.get('id')
+    query2 = request.GET.get('date_receipt')
+    query3 = request.GET.get('FIO')
+    query4 = request.GET.get('type_question')
+    query5 = request.GET.get('ty')
+    p = True
+    if query1 != "":
+        object_list = Application.objects.filter(
+            Q(id=query1) & Q(status=query5)
+        )
+    elif query2 != "":
+        object_list = Application.objects.filter(
+            Q(date_receipt=query2) & Q(status=query5)
+        )
+    elif query3 != "":
+        object_list = Application.objects.filter(
+            Q(FIO=query3) & Q(status=query5)
+        )
+    elif query4 != "":
+        o = Type_question.objects.get(name=query4)
+        if o:
+            object_list = Application.objects.filter(
+                Q(type_question=o) & Q(status=query5)
+            )
+    else:
+        object_list = ""
+        p = False
+    if len(object_list) == 0:
+        p = False
+    return render(request, 'main/table_search.html', {'title': 'Поиск',
+                                                               'applications': object_list, 'flag': p})
+
+
+@login_required(login_url='login')
+def application_secretary(request):
+    applications = Application.objects.filter(status='Confirmed Applications')
+    return render(request, 'main/application_secretary.html', {'title': 'Подтвержденные заявки',
+                                                               'applications': applications})
 
 
 @login_required(login_url='login')
@@ -36,6 +82,8 @@ def application_new(request):
         flag = True
     else:
         flag = False
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     name = request.user.username
     role = request.user.groups.first()
     applications = Application.objects.filter(status='New Applications')
@@ -45,11 +93,15 @@ def application_new(request):
 
 @login_required(login_url='login')
 def application_employee(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     employee = User.objects.filter(groups__name='Employee')
     return render(request, 'main/application_employee.html', {'employee': employee})
 
 
 def application_list(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     if request.method == "GET":
         date = request.GET.get("date")
         employee = request.GET.get("FIO")
@@ -62,8 +114,9 @@ def application_list(request):
 
 @login_required(login_url='login')
 def create_timetable(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     if request.method == "POST":
-        i = 0
         tom = Timetable()
         tom.time = request.POST.get("time")
         tom.id_employee = request.POST.get("id_employee")
@@ -80,6 +133,8 @@ def create_timetable(request):
 def adm(request):
     if request.user.groups.filter(name='Employee').exists():
         return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     group = models.Group.objects.get(name='Employee')
     users = group.user_set.all()
     return render(request, 'main/administration.html', {'title': 'Администрация', 'users': users})
@@ -88,6 +143,8 @@ def adm(request):
 @login_required(login_url='login')
 def analysis(request):
     if request.user.groups.filter(name='admin').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
+    if request.user.groups.filter(name='Secretary').exists():
         return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     if request.method == 'POST':
         date = request.POST.get("date")
@@ -137,7 +194,8 @@ def analysis(request):
             a.append(len(i))
             c[el.name] = len(i)
         col_type = len(names)
-        question_is_not = len(Application.objects.filter(Q(status="New Applications") | Q(status="Rejected Applications")))
+        question_is_not = len(
+            Application.objects.filter(Q(status="New Applications") | Q(status="Rejected Applications")))
         question_is_yea = len(Application.objects.filter(status="Confirmed Applications"))
         sotr = {}
         ques = {}
@@ -145,16 +203,20 @@ def analysis(request):
         for el in all:
             ques['Всего'] = len(Application.objects.filter(id_employee=el.id))
             ques['Решено'] = len(Application.objects.filter(Q(id_employee=el.id) & Q(status="Confirmed Applications")))
-            ques['На рассмотрении'] = len(Application.objects.filter(Q(id_employee=el.id) & ~Q(status="Confirmed Applications")))
+            ques['На рассмотрении'] = len(
+                Application.objects.filter(Q(id_employee=el.id) & ~Q(status="Confirmed Applications")))
             sotr[el.username] = ques
             ques = {}
         return render(request, 'main/analysis.html', {'title': 'Поиск', 'all': a, 'all_len': all_len,
-                                                      'names': names, 'c': c, 'col_type': col_type,'question_is_not': question_is_not,
+                                                      'names': names, 'c': c, 'col_type': col_type,
+                                                      'question_is_not': question_is_not,
                                                       'question_is_yea': question_is_yea, 'ques': sotr})
 
 
 @login_required(login_url='login')
 def search_all(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     query1 = request.GET.get('FIO')
     if User.objects.filter(username=query1).exists():
         us = User.objects.get(username=query1)
@@ -172,6 +234,8 @@ def search_all(request):
 
 @login_required(login_url='login')
 def add_category(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     if request.method == "POST":
         t = Type_employee()
         i = request.POST.get("id")
@@ -186,6 +250,8 @@ def add_category(request):
 
 @login_required(login_url='login')
 def create_adm(request, id):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     type_question = Type_employee.objects.filter(id_employee=id)
     type_all = Type_question.objects.all()
     for el in type_question:
@@ -200,6 +266,8 @@ def create_adm(request, id):
 
 @login_required(login_url='login')
 def delete_timetable(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     date = request.GET.get('date')
     id = request.GET.get('id_employee')
     tim = request.GET.get('time')
@@ -215,6 +283,8 @@ def delete_timetable(request):
 
 @login_required(login_url='login')
 def serch_timetable(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     query1 = request.GET.get('FIO')
     query2 = request.GET.get('date')
     if query1 and query2:
@@ -242,8 +312,7 @@ class SearchResultsView_timetable(ListView):
             object_list = Timetable.objects.filter(
                 Q(id_employee=us.id) & Q(date=query2)
             )
-            a = "собака"
-            return object_list, a
+            return object_list
 
 
 class SearchResultsView(ListView):
@@ -282,6 +351,8 @@ class SearchResultsView(ListView):
 
 @login_required(login_url='login')
 def timetable(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     timetable_ = Timetable.objects.all()
     user2 = User.objects.all()
     user = []
@@ -328,6 +399,8 @@ def application_true(request):
 
 @login_required(login_url='login')
 def application_false(request):
+    if request.user.groups.filter(name='Secretary').exists():
+        return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     applications = Application.objects.filter(status='Rejected Applications')
     return render(request, 'main/application_false.html', {'title': 'Отклоненные заявки', 'applications': applications})
 
