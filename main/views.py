@@ -390,6 +390,10 @@ def show_application(request, application_slug):
 
 
 @login_required(login_url='login')
+def create_application(request):
+    return render(request, 'main/create_application.html', {'title': 'Создание заявки'})
+
+@login_required(login_url='login')
 def application_true(request):
     if request.user.groups.filter(name='Employee').exists():
         flag = True

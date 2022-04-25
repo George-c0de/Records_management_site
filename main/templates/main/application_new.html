@@ -36,7 +36,14 @@
 
             <form action="{% url 'application_employee' %}" method="get">
         <button class="btn btn-primary" type="submit">Сформировать список</button>
+    </form> </div>
+                <div class="col"> <form action="{% url 'create_application' %}" method="post" >
+            {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+            Создать запись
+        </button>
     </form></div>
+
             </div>
             </div>
             {% endif %}
