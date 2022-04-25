@@ -74,10 +74,7 @@
                             {% for el in user %}
                                   <option value={{ el.id }}>{{ el.username }} id -  {{ el.id }}</option>
                             {% endfor %}
-                            {% else %}
-                            <option>Нет пользователей</option>
-                        {% endif %}
-                    </select>
+                            </select>
                     <br>
                      <div class="row">
                          <div class="col">
@@ -85,8 +82,11 @@
                          <div class="col" style="margin-left: 250px;">
                              <input class="btn btn-danger" type="submit" name="status" value="Rejected Applications" /></div>
                      </div>
-
                     </form>
+                            {% else %}
+                            <option>Нет пользователей</option>
+                        {% endif %}
+
                 </div>
             </div>
     </main>

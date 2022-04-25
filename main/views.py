@@ -371,7 +371,7 @@ def show_application(request, application_slug):
     user = []
     user2 = User.objects.all()
     for el in user2:
-        if el.groups.filter(name='Employee').exists():
+        if el.groups.filter(name='Consultants').exists():
             user.append(el)
     application = get_object_or_404(Application, slug=application_slug)
     if request.method == "POST":
