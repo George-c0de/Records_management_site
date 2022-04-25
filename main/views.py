@@ -391,17 +391,27 @@ def show_application(request, application_slug):
 
 @login_required(login_url='login')
 def application_true(request):
+    if request.user.groups.filter(name='Employee').exists():
+        flag = True
+    else:
+        flag = False
     applications = Application.objects.filter(status='Confirmed Applications')
     return render(request, 'main/application_true.html', {'title': 'Подтвержденные заявки',
-                                                          'applications': applications})
+                                                          'applications': applications,
+                                                          'flag': flag})
 
 
 @login_required(login_url='login')
 def application_false(request):
+    if request.user.groups.filter(name='Employee').exists():
+        flag = True
+    else:
+        flag = False
     if request.user.groups.filter(name='Secretary').exists():
         return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     applications = Application.objects.filter(status='Rejected Applications')
-    return render(request, 'main/application_false.html', {'title': 'Отклоненные заявки', 'applications': applications})
+    return render(request, 'main/application_false.html', {'title': 'Отклоненные заявки', 'applications': applications,
+                                                           'flag': flag})
 
 
 def help(request):

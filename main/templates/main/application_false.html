@@ -22,6 +22,19 @@
       <a href="{% url 'application_false' %}"><button style="width: 350px; height: 50px" type="button" class="btn btn-light btn-lg">Отклоненные заявки</button></a>
     </div>
             </div>
+            {% if flag %}
+            <div class="container">
+                <br>
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-5">
+
+            <form action="{% url 'application_employee' %}" method="get">
+        <button class="btn btn-primary" type="submit">Сформировать список</button>
+    </form></div>
+            </div>
+            </div>
+            {% endif %}
         </div>
     <br>
       <h2>{{ title }}</h2>
@@ -43,6 +56,7 @@
             </div>
             <input type="hidden" name="ty" value="Rejected Applications">
         </div>
+
         </div>
         <div class="col">
             <button type="submit" class="btn btn-primary btn-lg">Поиск</button>
