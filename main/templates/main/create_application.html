@@ -5,8 +5,7 @@
 {% endblock %}
 
 {% block user %}
-    {{user}},
-{{ role }}
+
 {% endblock %}
 {% block content %}
 
@@ -15,7 +14,49 @@
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
         <div class="container">
-            <input name="type" type="">
+            <form action="{% url 'app_save' %}" method="post">{% csrf_token %}
+                <label for="1">
+                Дата подачи заявки:
+                </label><input id="1" required placeholder="" name="date_application" type="datetime-local">
+                <br><br>
+                <label for="2">
+                Время приема: </label><input id="2" required placeholder="" name="time" type="time">
+                <br><br>
+                <label for="3">
+                Дата приема: </label>
+                <input id="3" required placeholder="" name="date_receipt" type="date">
+                <br><br>
 
+                <label for="4">
+                Тип вопроса: </label><select name="type_question">
+                    {% for el in type %}
+                    <option value="{{ el.id }}">{{ el.name }}
+                    </option>{% endfor %}
+                </select><br><br>
+                <label for="5">
+                Консультант: </label><select name="id_employee">
+                    {% for el in user %}
+                        <option value="{{ el.id }}">{{ el.username }}
+                        </option>
+                    {% endfor %}
+                </select><br><br>
+                <label for="5">Цель визита</label>
+                <input id="5" required placeholder="" name="purpose_visit" type="text">
+        <br>
+
+                <input required placeholder="" name="status" type="hidden" value="New Applications"><br>
+            <label for="6">Введите ФИО</label>
+                <input id="6" required placeholder="" name="FIO" type="text">
+                <br><br>
+            <label for="7">Введите номер телефона</label>
+                <input id="7" required placeholder="" name="telephone" type="number">
+                <br><br>
+            <label for="8">Введите email</label>
+                <input id="8" required placeholder="" name="email" type="email">
+                <br><br>
+            <button class="btn btn-primary" type="submit">
+                Создать заявку
+            </button>
+            </form>
         </div></main></body>
 {% endblock %}

@@ -391,7 +391,34 @@ def show_application(request, application_slug):
 
 @login_required(login_url='login')
 def create_application(request):
-    return render(request, 'main/create_application.html', {'title': 'Создание заявки'})
+    type_ = Type_question.objects.all()
+    user = User.objects.filter(groups__name='Employee')
+    return render(request, 'main/create_application.html', {'title': 'Создание заявки', 'type': type_, 'user':user })
+
+
+@login_required(login_url='login')
+def app_save(request):
+    a = Application()
+    if request.method == 'POST':
+        a.date_application = request.POST.get("date_application")
+        a.time = request.POST.get("time")
+        a.date_receipt = request.POST.get("date_receipt")
+        inty = request.POST.get("type_question")
+        b = Type_question.objects.get(id=inty)
+        a.type_question = b
+        a.id_employee = request.POST.get("id_employee")
+        a.slug = request.POST.get("date_application")
+        a.purpose_visit = request.POST.get("purpose_visit")
+        a.text = ""
+        a.FIO = request.POST.get("FIO")
+        a.telephone = request.POST.get("telephone")
+        a.email = request.POST.get("email")
+        a.save()
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+    else:
+        return HttpResponseNotFound("<h2>Ошибка при записи</h2><br>")
+
+
 
 @login_required(login_url='login')
 def application_true(request):

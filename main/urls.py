@@ -28,4 +28,5 @@ urlpatterns = [
     path('application_secretary', views.application_secretary, name='application_secretary'),
     path('application_secretary_search', views.application_secretary_search, name='application_secretary_search'),
     path('create_application', views.create_application, name='create_application'),
+    path('app_save', views.app_save, name='app_save'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
