@@ -147,34 +147,35 @@ def analysis(request):
         return HttpResponseNotFound("<h2>У вас нет прав на эту страницу, вернитесь назад</h2><br>")
     if request.method == 'POST':
         date = request.POST.get("date")
+        date2 = request.POST.get("date2")
         if not date:
             return HttpResponseNotFound("<h2>Неверное указание даты</h2><br><p>Вернитесь назад и выберите дату</p>")
         question = Type_question.objects.all()
         a = []
         names = []
         c = {}
-        all_len = len(Application.objects.filter(date_application=date))
+        all_len = len(Application.objects.filter(date_application__range=(date, date2)))
         for el in question:
-            i = Application.objects.filter(Q(type_question=el) & Q(date_application=date))
+            i = Application.objects.filter(Q(type_question=el) & Q(date_application__range=(date, date2)))
             names.append(el.name)
             a.append(len(i))
             c[el.name] = len(i)
         col_type = len(names)
         question_is_not = len(
             Application.objects.filter(Q(status="New Applications") | Q(status="Rejected Applications")).filter(
-                Q(date_application=date)))
+                Q(date_application__range=(date, date2))))
         question_is_yea = len(
-            Application.objects.filter(status="Confirmed Applications").filter(Q(date_application=date)))
+            Application.objects.filter(status="Confirmed Applications").filter(Q(date_application__range=(date, date2))))
         sotr = {}
         ques = {}
         all = User.objects.all()
         for el in all:
-            ques['Всего'] = len(Application.objects.filter(Q(id_employee=el.id) & Q(date_application=date)))
+            ques['Всего'] = len(Application.objects.filter(Q(id_employee=el.id) & Q(date_application__range=(date, date2))))
             ques['Решено'] = len(Application.objects.filter(Q(id_employee=el.id) & Q(status="Confirmed Applications")
-                                                            & Q(date_application=date)))
+                                                            & Q(date_application__range=(date, date2))))
             ques['На рассмотрении'] = len(
                 Application.objects.filter(Q(id_employee=el.id) & ~Q(status="Confirmed Applications")
-                                           & Q(date_application=date)))
+                                           & Q(date_application__range=(date, date2))))
             sotr[el.username] = ques
             ques = {}
         return render(request, 'main/analysis.html', {'title': 'Поиск', 'all': a, 'all_len': all_len,

@@ -11,8 +11,9 @@
         <div class="container">
         <form action="{% url 'analysis' %}" method="POST">
             {% csrf_token %}
-            <input name="date" type="date">
-            <button type="submit">Поиск по дате</button>
+            <label>Начало:</label><input name="date" type="date">
+            <label>Конец:</label><input name="date2" type="date">
+            <button type="submit" class="btn btn-secondary">Поиск по дате</button>
         </form>
         {% if all_len %}
             <div class="row">
@@ -22,7 +23,7 @@
 
 <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
- <input type="button" name="btn" value="Скачать" onClick="dow()">
+ <input class="btn btn-secondary" type="button" name="btn" value="Скачать" onClick="dow()">
                 </div>
                 <div class="col">
                     <div class="row">
@@ -31,7 +32,7 @@
                             <input id="names" type="hidden" value="{{ names }}">
                             <input id="all_col" type="hidden" value="{{ all }}">
                              <input id="col_type" type="hidden" value="{{ col_type }}">
-                            <input type="button" name="btn" value="Вычислить" onClick="Quantity()">
+                            <input class="btn btn-secondary" type="button" name="btn" value="Вычислить" onClick="Quantity()">
                 {% else %}
                             <p>Нет</p>
                 {% endif %}
@@ -49,7 +50,7 @@
                 <input id="is_yea" type="hidden" value="{{ question_is_yea }}">
 <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
-                <input type="button" name="btn" value="Вычислить" onClick="circle()">
+                <input class="btn btn-secondary" type="button" name="btn" value="Вычислить" onClick="circle()">
             </div>
             <div class="col">
                 <p>По сотрудникам</p>
