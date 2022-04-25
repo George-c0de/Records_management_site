@@ -22,13 +22,21 @@
            <button type="submit" class="btn btn-primary">Поиск
     <i class="fas fa-search"></i>
   </button>
-        </div>
+        </div><br>
+           <style>
+   p {
+    background: #ceecf8; /* Цвет фона под заголовком */
+    color: black; /* Цвет текста */
+    padding: 10px; /* Поля вокруг текста */
+   }
+   a {
+    text-decoration: none; /* Отменяем подчеркивание у ссылки */
+   }
+  </style>
        </form>
         {% if user %}
             {% for el in user %}
             <p>Login: {{ el.username }}<br> Имя: {{  el.first_name }} Фамилия: {{ el.last_name }}</p>
-            <br><br>
-            <p>{{ date }}</p>
                 {% endfor %}
     {% endif %}
     {% if user %}

@@ -13,8 +13,8 @@
             <label>Выберите дату и кликните на пользователя для перехода на расписание</label>
             <input type="date" name="date">
             <br><br>
-            <button type="submit" ><p>{{ user.username }} {{ user.first_name }} {{ user.last_name }}</p></button></form>
-        <br>
+            <p>{{ user.username }} {{ user.first_name }} {{ user.last_name }}</p>
+            <button type="submit" class="btn btn-primary">Перейти к расписанию</button></form>
             <div class="row">
                 <div class="col">
                     <p>Направление: </p>
@@ -37,7 +37,7 @@
                     </select>
                 <input type="hidden" value="{{ user.id }}" name="user">
                 <br><br>
-                    <button type="submit">Добавить категорию</button>
+                    <button class="btn btn-primary" type="submit">Добавить категорию</button>
                 </form>
                 {% else %}
                 <p>Все категории добавлены</p>

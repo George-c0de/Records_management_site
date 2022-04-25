@@ -18,13 +18,23 @@
     <i class="fas fa-search"></i>
   </button></div>
 </form><br>
-    <p>Список сотрудников: </p>
+    <h6>Список сотрудников: </h6>
     <div class="row">
+    <style>
+   p {
+    background: #ceecf8; /* Цвет фона под заголовком */
+    color: black; /* Цвет текста */
+    padding: 10px; /* Поля вокруг текста */
+   }
+   a {
+    text-decoration: none; /* Отменяем подчеркивание у ссылки */
+   }
+  </style>
     {% for el in users %}
         <a href="create_adm/{{ el.id }}"><div class="col">
-        <button class="btn btn-primary btn-lg">
+        <p style="height: 50px;width: 1200px" class="p">
            {{ el.username }} {{ el.first_name }} {{ el.last_name }}
-        </button>
+        </p>
         </div></a>
     {% endfor %}
     </div>

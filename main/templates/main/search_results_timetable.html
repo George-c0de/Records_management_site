@@ -56,7 +56,7 @@
     <div class="col">
         <form method="POST" action="{% url 'create_timetable' %}">
              {% csrf_token %}
-            <input required placeholder="Ваше имя" style="height: 40px; width: 150px" type="time" name="time"><br><br>
+            <input min="09:00" max="11:00" step="1800" required placeholder="Время" style="height: 40px; width: 150px" type="time" name="time"><br><br>
             <input type="hidden" name="date" value="{{ date }}">
             <input type="hidden" name="id_employee" value="{{ user.id }}">
             <select style="height: 40px; width: 150px" class="form-control form-control-sm" id="exampleFormControlSelect1" name="bool">
