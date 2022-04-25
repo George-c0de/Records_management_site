@@ -26,12 +26,11 @@ def index(request):
     elif request.user.groups.filter(name='Secretary').exists():
         template = 'main/index.html'
         extends = 'main/base_secretary.html'
-        flag = "secretary"
     else:
         template = 'main/login.html'
     tasks = Application.objects.all()
     return render(request, template,
-                  {'title': 'Главная страница', 'tasks': tasks, 'extends': extends, 'flag': flag, 'name': user})
+                  {'title': 'Главная страница', 'tasks': tasks, 'extends': extends, 'name': user})
 
 
 @login_required(login_url='login')
