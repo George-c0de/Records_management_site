@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+import datetime
 
 
 class Type_question(models.Model):
@@ -17,6 +18,7 @@ class Type_employee(models.Model):
 
 class Application(models.Model):
     date_application = models.DateTimeField('Дата подачи заявки')
+    time = models.TimeField('Время подачи', default=datetime.datetime.now())
     date_receipt = models.DateField('Дата приема')
     type_question = models.ForeignKey(Type_question, on_delete=models.CASCADE)
     id_employee = models.IntegerField('id пользователя')

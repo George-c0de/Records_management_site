@@ -1,0 +1,114 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block user %}
+    {{user}},
+{{ role }}
+{% endblock %}
+{% block content %}
+     <body>
+
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <div id="3" class="container">
+            <h1>Список</h1>
+        <p>Дата: {{ date }}</p>
+        <p>Консультант: {{ employee.username }}</p>
+            <table id="tab" class="table" border="2" >
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Дата:</th>
+                <th scope="col">{{ date }}</th>
+                <th scope="col"></th>
+            </tr>
+            <tr>
+                 <th scope="col"></th>
+                <th scope="col">Консультант:</th>
+                <th scope="col">{{ employee.username }}</th>
+                <th scope="col"></th>
+            </tr>
+                <tr>
+      <th scope="col">#</th>
+      <th scope="col">Время</th>
+      <th scope="col">ФИО</th>
+      <th scope="col">Цель визита</th>
+    </tr>
+                {% for el in app %}
+    <tr>
+      <th scope="row"></th>
+      <td>{{ el.time }}</td>
+      <td>{{ el.FIO }}</td>
+      <td>{{ el.purpose_visit }}</td>
+    </tr>
+                {% endfor %}
+            </table><br><br>
+        <button type="button" onclick="dow()">Скачать
+        </button>
+<script type="text/javascript">
+function dow() {
+
+            // Variable to store the final csv data
+            var csv_data = [];
+
+            // Get each row data
+            var rows = document.getElementsByTagName('tr');
+            for (var i = 0; i < rows.length; i++) {
+
+                // Get each column data
+                var cols = rows[i].querySelectorAll('td,th');
+
+                // Stores each csv row data
+                var csvrow = [];
+                for (var j = 0; j < cols.length; j++) {
+
+                    // Get the text data of each cell
+                    // of a row and push it to csvrow
+                    if(j!==0)
+                        csvrow.push(cols[j].innerHTML);
+                }
+                // Combine each column value with comma
+                csv_data.push(csvrow.join(","));
+            }
+
+            // Combine each row data with new line character
+            csv_data = csv_data.join('\n');
+
+            // Call this function to download csv file
+            downloadCSVFile(csv_data);
+        }
+
+        function downloadCSVFile(csv_data) {
+
+            // Create CSV file object and feed
+            // our csv_data into it
+            var CSVFile = new Blob([csv_data], {
+                type: "image/csv",
+            });
+            console.log(CSVFile)
+            // Create to temporary link to initiate
+            // download process
+            var temp_link = document.createElement('a');
+
+            // Download csv file
+            temp_link.download = "Список.csv";
+            var url = window.URL.createObjectURL(CSVFile);
+
+            temp_link.href = url;
+
+            // This link should not be displayed
+            temp_link.style.display = "none";
+            document.body.appendChild(temp_link);
+
+            // Automatically click the link to
+            // trigger download
+
+            temp_link.click();
+            document.body.removeChild(temp_link);
+        }
+</script>
+        </div></main></body>
+
+{% endblock %}

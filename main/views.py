@@ -32,11 +32,32 @@ def index(request):
 
 @login_required(login_url='login')
 def application_new(request):
+    if request.user.groups.filter(name='Employee').exists():
+        flag = True
+    else:
+        flag = False
     name = request.user.username
     role = request.user.groups.first()
     applications = Application.objects.filter(status='New Applications')
     return render(request, 'main/application_new.html', {'title': 'Новые заявки', 'applications': applications,
-                                                         'name': name, 'role': role})
+                                                         'name': name, 'role': role, 'flag': flag})
+
+
+@login_required(login_url='login')
+def application_employee(request):
+    employee = User.objects.filter(groups__name='Employee')
+    return render(request, 'main/application_employee.html', {'employee': employee})
+
+
+def application_list(request):
+    if request.method == "GET":
+        date = request.GET.get("date")
+        employee = request.GET.get("FIO")
+        emp = User.objects.get(id=employee)
+        app = Application.objects.filter(Q(date_application=date) | Q(id_employee=employee))
+        return render(request, 'main/application_list.html', {'app': app, 'date': date, 'employee': emp})
+    else:
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 
 @login_required(login_url='login')
@@ -270,7 +291,7 @@ def timetable(request):
     context = {
         'user': user,
         'timetable_': timetable_,
-        'title': "Расписание",
+        'title': "Расписание"
     }
     return render(request, 'main/timetable.html', context=context)
 
