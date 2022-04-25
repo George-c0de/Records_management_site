@@ -9,7 +9,7 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
         <div class="container">
         <form action="{% url 'search_timetable' %}" method="get">
-            <input type="hidden" name="FIO" value="{{ user.username }}">
+            <input  type="hidden" name="FIO" value="{{ user.username }}">
             <label>Выберите дату и кликните на пользователя для перехода на расписание</label>
             <input type="date" name="date">
             <br><br>

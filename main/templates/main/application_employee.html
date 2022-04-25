@@ -15,7 +15,8 @@
             <h1> Сформировать список</h1>
             <form action="{% url 'application_list' %}" method="get">
             {% csrf_token %}
-                <p>Дата: <input type="date" name="date"><br></p>
+                <p>Дата: <input required placeholder="Ваше имя"
+ type="date" name="date"><br></p>
                 <p>Консультант : <select name="FIO">
                     {% for el in employee %}
   <option value="{{ el.id }}">{{ el.username }}</option>
