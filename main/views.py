@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Application, Timetable, Type_question, Type_employee
 from django.views.generic import ListView
 from django.contrib.auth import models
+import random
 
 
 @login_required(login_url='login')
@@ -372,7 +373,7 @@ def show_application(request, application_slug):
     user = []
     user2 = User.objects.all()
     for el in user2:
-        if el.groups.filter(name='Consultants').exists():
+        if el.groups.filter(name='Employee').exists():
             user.append(el)
     application = get_object_or_404(Application, slug=application_slug)
     if request.method == "POST":
@@ -382,7 +383,9 @@ def show_application(request, application_slug):
         application.save()
         return HttpResponseRedirect("/")
     else:
+        u2 = User.objects.get(id=application.id_employee)
         context = {
+            'u2': u2,
             'user': user,
             'application': application,
             'title': application.id,
@@ -394,7 +397,7 @@ def show_application(request, application_slug):
 def create_application(request):
     type_ = Type_question.objects.all()
     user = User.objects.filter(groups__name='Employee')
-    return render(request, 'main/create_application.html', {'title': 'Создание заявки', 'type': type_, 'user':user })
+    return render(request, 'main/create_application.html', {'title': 'Создание заявки', 'type': type_, 'user': user})
 
 
 @login_required(login_url='login')
@@ -408,12 +411,13 @@ def app_save(request):
         b = Type_question.objects.get(id=inty)
         a.type_question = b
         a.id_employee = request.POST.get("id_employee")
-        a.slug = request.POST.get("date_application")
         a.purpose_visit = request.POST.get("purpose_visit")
         a.text = ""
         a.FIO = request.POST.get("FIO")
         a.telephone = request.POST.get("telephone")
         a.email = request.POST.get("email")
+        a.slug = "_" + str(a.date_application.day) + "_" + \
+                 str(a.date_application.microsecond) + str(random.randint(0, 9999))
         a.save()
         return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
     else:
